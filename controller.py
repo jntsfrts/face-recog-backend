@@ -1,49 +1,41 @@
 from flask import Flask
-from recognition_service import classify_face, has_face
 from flask import Flask, jsonify, request
 import base64
-import signup_service
+import authorization_service
 
 
 app = Flask("app")
 
 
-@app.route("/signup", methods=['POST'])
+@app.route("/signup", methods=['POST'])  # TODO mudar para /user/new
 def signup():
 
     name = request.json['name']
     face = request.json['face']
 
-    response = signup_service.try_signup(name, face)
+    response = authorization_service.try_signup(name, face)
 
     return response
 
 
-@app.route("/login", methods=['POST'])
+@app.route("/login", methods=['POST'])  # TODO mudar para /session/new
 def login():
 
-    photo = request.json['photo']
+    face = request.json['face']
 
-    with open(f'./faces/current-face-test/test.jpg', 'wb') as fh:
-        fh.write(base64.b64decode(photo))
+    response = authorization_service.try_login(face)
+    print(response)
+    return response
 
-    name = classify_face('test.jpg')
 
-    return {"name": f"{str(name).title()}"}
+# TODO mudar para /user/new
 
 
 @app.route("/login/face", methods=['POST'])
 def find_face():
     face = request.json['face']
 
-    with open(f'./faces/current-face-test/test.jpg', 'wb') as fh:
-        fh.write(base64.b64decode(face))
-
-    result = has_face('test.jpg')
-
-    data = {'hasFace': str(result).lower()}
-
-    return jsonify(data)
+    return authorization_service.find_face(face)
 
 
 if __name__ == '__main__':
