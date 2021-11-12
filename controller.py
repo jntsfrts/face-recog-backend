@@ -1,12 +1,12 @@
 from flask import Flask
 from flask import Flask, jsonify, request
-import authorization_service
+from service import authorization_service
 
 
 app = Flask("app")
 
 
-@app.route("/user/new", methods=['POST'])  # TODO mudar para /user/new
+@app.route("/user/new", methods=['POST'])
 def signup():
 
     name = request.json['name']
@@ -18,7 +18,7 @@ def signup():
     return response
 
 
-@app.route("/session/new", methods=['POST'])  # TODO mudar para /session/new
+@app.route("/session/new", methods=['POST'])
 def login():
 
     face = request.json['face']
@@ -26,9 +26,6 @@ def login():
     response = authorization_service.try_login(face)
     print(response)
     return response
-
-
-# TODO mudar para /user/new
 
 
 @app.route("/user/face", methods=['POST'])

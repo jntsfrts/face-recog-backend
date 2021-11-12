@@ -1,5 +1,5 @@
-import recognition_service
-import mail_service
+from service import recognition_service
+from service import mail_service
 import base64
 
 
@@ -23,7 +23,7 @@ def try_signup(name, email, face):
             response["status"] = "succesful"
             response["description"] = "Successfully registered user."
 
-            mail_service.send_message(name, email)
+            #mail_service.send_message(name, email)
 
             return response
 
@@ -33,7 +33,8 @@ def try_signup(name, email, face):
 
         return response
 
-    except:
+    except Exception as e:
+        print(e)
         return {"status": "error", "description": "invalid image."}
 
 
@@ -61,7 +62,8 @@ def try_login(face):
 
             return response
 
-        except:
+        except Exception as e:
+            print(e)
             return {"status": "error", "description": "invalid image."}
 
 
@@ -76,7 +78,8 @@ def find_face(face):
             # TODO trocar para foundFace
             return {'hasFace': str(result).lower()}
 
-        except:
+        except Exception as e:
+            print(e)
             return {"status": "error", "description": "invalid image."}
 
 
