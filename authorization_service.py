@@ -1,8 +1,9 @@
-import recognition_service  # recognition_service.classify_face
+import recognition_service
+import mail_service
 import base64
 
 
-def try_signup(name, face):
+def try_signup(name, email, face):
 
     try:
 
@@ -21,6 +22,8 @@ def try_signup(name, face):
             response["name"] = f"{str(name).title()}"
             response["status"] = "succesful"
             response["description"] = "Successfully registered user."
+
+            mail_service.send_message(name, email)
 
             return response
 
