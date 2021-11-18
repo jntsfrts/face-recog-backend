@@ -23,7 +23,7 @@ def try_signup(name, email, face):
             response["status"] = "succesful"
             response["description"] = "Successfully registered user."
 
-            #mail_service.send_message(name, email)
+            mail_service.send_message(name, email)
 
             return response
 
@@ -66,20 +66,25 @@ def try_login(face):
             print(e)
             return {"status": "error", "description": "invalid image."}
 
+# procurando por uma face válida
+
 
 def find_face(face):
 
     with open(f'./find-face-test.jpg', 'wb') as fh:
 
         try:
+            # decodificando o texto em base 64 e salvando a imagem.
             fh.write(base64.b64decode(face))
+            # enviando a imagem para o serviço de detecção.
             result = recognition_service.find_face('find-face-test.jpg')
 
-            # TODO trocar para foundFace
+            # retornando o resultado vindo do serviço de detecção.
             return {'hasFace': str(result).lower()}
 
         except Exception as e:
             print(e)
+            # retornando erro no caso da imagem ser inválida.
             return {"status": "error", "description": "invalid image."}
 
 

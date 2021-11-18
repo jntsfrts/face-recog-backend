@@ -5,14 +5,17 @@ import face_recognition
 import numpy as np
 from time import sleep
 
+"""
+percorre todos os arquivos da pasta 'faces'
+codificando tod
+looks through the faces folder and encodes all
+the faces
+
+:return: dict of (name, image encoded)
+"""
+
 
 def get_encoded_faces():
-    """
-    looks through the faces folder and encodes all
-    the faces
-
-    :return: dict of (name, image encoded)
-    """
     encoded = {}
 
     for dirpath, dnames, fnames in os.walk("./faces"):
@@ -80,25 +83,24 @@ def classify_face(im):
                           (right+20, bottom+20), (255, 0, 0), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
             cv2.putText(img, name, (left - 20, bottom + 15),
-                        font, 1.0, (255, 255, 255), 2)
+                        font, 0.8, (255, 255, 255), 2)
 
             # testes
             if(name):
+                cv2.imwrite('./templates/foto_cadastrada.jpg', img)
                 return name
 
-    # Display the resulting image
-    '''
-    while True:
 
-        cv2.imshow('Video', img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            return face_names 
-    '''
-
-
+# recebendo a imagem nomeada como find-face-test.jpg
 def find_face(im):
+    # lendo a imagem
     img = cv2.imread(im, 1)
-    face_locations = face_recognition.face_locations(img)
+
+    # transformando a escala de cores da imagem
+    rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    # aplicando o algoritmo de detecção
+    face_locations = face_recognition.face_locations(rgb_img)
 
     if(face_locations):
         return True

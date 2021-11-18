@@ -1,4 +1,12 @@
 import requests
+import configparser
+
+config = configparser.RawConfigParser()
+config.read('Config.properties')
+
+MAILGUN_URL = config.get('MailGunSection', 'mail.endpoint')
+MAIL_API_KEY = config.get('MailGunSection', 'mail.apikey')
+MAIL_SENDER = config.get('MailGunSection', 'mail.sender')
 
 
 def send_message(name, email):
@@ -7,10 +15,15 @@ def send_message(name, email):
         content = file.read()
         file.close()
 
+    with open('./templates/foto_cadastrada.jpg', 'rb') as file:
+        foto_cadastrada = file.read()
+        file.close()
+
     return requests.post(
-        "https://api.mailgun.net/v3/sandboxe25c6c4b0935453b8e70c4eeff027d1b.mailgun.org/messages",
-        auth=("api", "0d9f56b23cbb3d8318c8e223bc74370a-30b9cd6d-941c1c4b"),
-        data={"from": "FaceRecog <jonatasfreitas20@gmail.com>",
+        MAILGUN_URL,
+        auth=("api", MAIL_API_KEY),
+        files=[("attachment", foto_cadastrada)],
+        data={"from": MAIL_SENDER,
               "to": f"{name} + <{email}>",
               "subject": "Verificação de email",
               "html": content})
