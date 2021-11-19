@@ -1,9 +1,10 @@
 from service import recognition_service
 from service import mail_service
 import base64
+import json
 
 
-def try_signup(name, email, face):
+def try_signup(email, token, face):
 
     try:
 
@@ -12,18 +13,21 @@ def try_signup(name, email, face):
 
         already_registered_user = check_existing_face("signup-test.jpg")
 
-        response = {"name": f"{str(name).title()}",
+        response = {"name": "",
                     "status": "", "description": ""}
 
-        if(already_registered_user == "Unknown"):
-            with open(f'./faces/{name}.jpg', 'wb') as fh:
+        user = get_user_by(token)
+
+        if(already_registered_user == "Unknown" and user != None):
+
+            with open(f"./faces/{user['name']}.jpg", 'wb') as fh:
                 fh.write(base64.b64decode(face))
 
-            response["name"] = f"{str(name).title()}"
+            response["name"] = f"{str(user['name']).title()}"
             response["status"] = "succesful"
             response["description"] = "Successfully registered user."
 
-            mail_service.send_message(name, email)
+            mail_service.send_message(user['name'], email)
 
             return response
 
@@ -46,13 +50,18 @@ def try_login(face):
 
             fh.write(base64.b64decode(face))
 
-            user = check_existing_face("login-test.jpg")
+            user_name = check_existing_face("login-test.jpg")
 
-            response = {"name": "", "status": "", "description": ""}
 
-            if(user != "Unknown"):
-                response["name"] = f"{str(user).title()}"
+            response = {"name": "", "status": "", "accessLevel": "", "description": ""}
+
+            if(user_name != "Unknown"):
+                
+                access_level = get_access_level_by(user_name)
+                
+                response["name"] = f"{str(user_name).title()}"
                 response["status"] = "succesful"
+                response["accessLevel"] = access_level
                 response["description"] = "Successfully logged in."
 
                 return response
@@ -95,4 +104,41 @@ def check_existing_face(face):
     if(user_name):
         return user_name
 
+    return None
+
+
+def get_user_by(token):
+
+    users = open('credentials.txt', 'rt')
+    lines = users.read().split('\n')
+    user = None
+
+    for line in lines:
+        if line != '':
+            user = json.loads(line)
+
+            if (user['token'] == token):
+                print(f'TOKEN [{token}] válido')
+                return user
+    
+    print(f'TOKEN [{token}] inválido')
+    return None
+
+
+
+def get_access_level_by(name):
+
+    users = open('credentials.txt', 'rt')
+    lines = users.read().split('\n')
+    user = None
+
+    for line in lines:
+        if line != '':
+            user = json.loads(line)
+
+            if (user['name'] == name):
+                print(f'TOKEN [{name}] válido')
+                return user['accessLevel']
+    
+    print(f'TOKEN [{name}] inválido')
     return None

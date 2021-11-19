@@ -8,11 +8,12 @@ user = Blueprint('user', __name__)
 @user.route("/user/new", methods=['POST'])
 def signup():
 
-    name = request.json['name']
+    #name = request.json['name']
     email = request.json['email']
+    token = request.json['token']
     face = request.json['face']
 
-    response = authorization_service.try_signup(name, email, face)
+    response = authorization_service.try_signup(email, token, face)
 
     return response
 
