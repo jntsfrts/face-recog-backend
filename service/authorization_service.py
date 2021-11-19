@@ -8,20 +8,30 @@ def try_signup(email, token, face):
 
     try:
 
+        response = {"name": "",
+                    "status": "", "description": ""}
+        
+        user = get_user_by(token)
+
+        if (user == None):
+            response["name"] = ""
+            response["status"] = "credentials_error"
+            response["description"] = "Dados inválidos."
+
+            return response
+
         with open(f'./signup-test.jpg', 'wb') as fh:
             fh.write(base64.b64decode(face))
+            fh.close()
 
         already_registered_user = check_existing_face("signup-test.jpg")
 
-        response = {"name": "",
-                    "status": "", "description": ""}
 
-        user = get_user_by(token)
-
-        if(already_registered_user == "Unknown" and user != None):
+        if(already_registered_user == "Unknown"):
 
             with open(f"./faces/{user['name']}.jpg", 'wb') as fh:
                 fh.write(base64.b64decode(face))
+                fh.close()
 
             response["name"] = f"{str(user['name']).title()}"
             response["status"] = "succesful"
@@ -32,8 +42,8 @@ def try_signup(email, token, face):
             return response
 
         response["name"] = str(already_registered_user).title()
-        response["status"] = "error"
-        response["description"] = "already registered user."
+        response["status"] = "already_registered_error"
+        response["description"] = "Usuário já possui cadastro."
 
         return response
 
